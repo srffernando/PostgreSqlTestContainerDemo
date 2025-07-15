@@ -109,4 +109,4 @@ dotnet test --filter Category=CRUD
 
 ## 👤 Author
 
-Built by **[Ramesh Franklin Fernando]** – passionate about QA Automation, .NET, and containerized testing!
+Built by **[Ramesh Franklin Fernando]** 

@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 [TestFixture]
 [Category("NoReset")]
 [Parallelizable(ParallelScope.Fixtures)]
-public class SampleNonResettingTests : IAsyncDisposable
+public class SampleNonResettingDBTests : IAsyncDisposable
 {
     private readonly PostgreContainerSetup _setup;
 
-    public SampleNonResettingTests()
+    public SampleNonResettingDBTests()
     {
         _setup = PostgreTestContainer.InitializeAsync().Result;
     }
@@ -68,5 +68,22 @@ public class SampleNonResettingTests : IAsyncDisposable
 
          Assert.That(entityCountAfter, Is.EqualTo(entityCountBefore + 1));
        
+    }
+
+    [Test]
+    [Order(4)]
+    public async Task Should_only_have_unique_entity_names_when_using_entity_numbering()
+    {
+        await using var context = new MyDbContext(_setup.Options);
+        var names = await context.SampleEntities.Select(e => e.Name).ToListAsync();
+
+        var duplicates = names.GroupBy(n => n)
+                              .Where(g => g.Count() > 1)
+                              .Select(g => g.Key)
+                              .ToList();
+
+        TestContext.WriteLine($"[UniquenessTest] Duplicates found: {string.Join(", ", duplicates)}");
+
+        Assert.That(duplicates, Is.Empty, "Duplicate entity names found");
     }
 }

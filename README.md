@@ -21,7 +21,7 @@ This repository demonstrates how to build robust, isolated, and repeatable integ
 ├── PostgreSqlTestContainerDemo.csproj
 ├── PostgreSqlTestContainerDemo.sln
 ├── Program.cs
-├── structure.txt
+├ ── README.md
 │
 ├── 📁 Data/
 │   ├── DesignTimeDbContextFactory.cs
@@ -32,16 +32,14 @@ This repository demonstrates how to build robust, isolated, and repeatable integ
 │   └── TestDataSeeder.cs
 │
 ├── 📁 Migrations/
-│   ├── 20250701040206_InitialCreate.cs
-│   ├── 20250701040206_InitialCreate.Designer.cs
 │   └── YourDbContextModelSnapshot.cs
 │
 ├── 📁 Models/
 │   └── SampleEntity.cs
 │
 ├── 📁 Tests/
-│   ├── NonResettingTests.cs
-│   └── SampleIntegrationTests.cs
+│   ├── SampleNonResettingDBTests.cs # No DB reset (state grows across tests)
+│   └── SampleIntegrationTests.cs # Resetting DB between tests
 ```
 
 ---
@@ -109,12 +107,6 @@ dotnet test --filter Category=CRUD
 
 ---
 
-## 📝 License
-
-MIT License
-
----
-
 ## 👤 Author
 
-Built by **[Ramesh Franklin Fernando]** – passionate about QA Automation, .NET, and containerized testing!
+Built by **[Ramesh Franklin Fernando]** 

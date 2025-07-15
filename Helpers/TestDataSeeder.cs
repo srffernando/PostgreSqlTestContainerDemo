@@ -1,7 +1,6 @@
 // Bogus is a .NET library for generating fake data (great for seeding test data)
 using Bogus;
 
-
 // Npgsql is the ADO.NET provider for PostgreSQL
 using Npgsql;
 

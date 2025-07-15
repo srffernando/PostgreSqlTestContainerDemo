@@ -107,12 +107,6 @@ dotnet test --filter Category=CRUD
 
 ---
 
-## 📝 License
-
-MIT License
-
----
-
 ## 👤 Author
 
 Built by **[Ramesh Franklin Fernando]** – passionate about QA Automation, .NET, and containerized testing!

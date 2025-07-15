@@ -32,8 +32,6 @@ This repository demonstrates how to build robust, isolated, and repeatable integ
 │   └── TestDataSeeder.cs
 │
 ├── 📁 Migrations/
-│   ├── 20250701040206_InitialCreate.cs
-│   ├── 20250701040206_InitialCreate.Designer.cs
 │   └── YourDbContextModelSnapshot.cs
 │
 ├── 📁 Models/

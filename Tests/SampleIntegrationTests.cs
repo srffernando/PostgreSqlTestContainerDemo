@@ -1,24 +1,33 @@
 using NUnit.Framework;
 using Microsoft.EntityFrameworkCore;
 
+
+// Marks this class as a test fixture (test container)
 [TestFixture]
+// Allows different test fixtures to run in parallel
 [Parallelizable(ParallelScope.Fixtures)]
 public class SampleIntegrationTests : IAsyncDisposable
 {
+    // Shared test container setup for PostgreSQL
     private readonly PostgreContainerSetup _setup;
+
+    // Used to prevent concurrent database resets during parallel test execution
     private static readonly SemaphoreSlim SetupLock = new(1, 1);
 
+    // Constructor initializes the PostgreSQL container setup (runs before each test fixture instance)
     public SampleIntegrationTests()
     {
         _setup = PostgreTestContainer.InitializeAsync().Result;
     }
 
+    // Ensures container is disposed after all tests complete
     public async ValueTask DisposeAsync() => await _setup.DisposeAsync();
 
+    // Runs before each test, resets the database to a clean state
     [SetUp]
     public async Task ResetDatabaseBeforeEachTest()
     {
-        await SetupLock.WaitAsync();
+        await SetupLock.WaitAsync(); // Acquire lock to prevent multiple tests from resetting DB at the same time
         try
         {
             await using var context = new MyDbContext(_setup.Options);
@@ -26,11 +35,13 @@ public class SampleIntegrationTests : IAsyncDisposable
         }
         finally
         {
-            SetupLock.Release();
+            SetupLock.Release(); // Release lock so other tests can proceed
         }
     }
 
+    // ================================
     // ========== CRUD Tests ==========
+    // ================================
 
     [Test]
     [Category("CRUD")]
@@ -93,7 +104,9 @@ public class SampleIntegrationTests : IAsyncDisposable
         Assert.That(sorted.Select(e => e.CreatedAt), Is.Ordered.Ascending);
     }
 
-    // ========== Validation ==========
+    // ================================
+    // ======== Validation ============
+    // ================================
 
     [Test]
     [Category("Validation")]
@@ -110,7 +123,9 @@ public class SampleIntegrationTests : IAsyncDisposable
         Assert.That(result!.Name, Is.Null);
     }
 
-    // ========== Parameterized Lookup ==========
+    // ================================
+    // ===== Parameterized Lookup =====
+    // ================================
 
     [Test]
     [Category("Lookup")]
@@ -143,14 +158,17 @@ public class SampleIntegrationTests : IAsyncDisposable
         }
     }
 
-    // ========== Parallel Execution ==========
+    // ==================================
+    // ====== Parallel Execution ========
+    // ==================================
 
     [Test]
     [Category("Parallel")]
+    // Allows this test to be run in parallel with other [Parallelizable] tests
     [Parallelizable(ParallelScope.Self)]
     public async Task Should_run_in_isolation_when_parallel_test_a_executes()
     {
-        await Task.Delay(200);
+        await Task.Delay(200); // Simulates long-running parallel task
         Assert.Pass("Parallel Test A completed");
     }
 
@@ -159,11 +177,18 @@ public class SampleIntegrationTests : IAsyncDisposable
     [Parallelizable(ParallelScope.Self)]
     public async Task Should_run_in_isolation_when_parallel_test_b_executes()
     {
-        await Task.Delay(200);
+        await Task.Delay(200); // Simulates long-running parallel task
         Assert.Pass("Parallel Test B completed");
     }
 
-    // ========== Exception Tests ==========
+    // These two parallel tests (A and B) can run simultaneously
+    // Because each test is marked as ParallelScope.Self
+    // But since the [SetUp] method uses a lock, database seeding happens one at a time
+    // After setup, the test logic runs independently in parallel
+
+    // ================================
+    // ======== Exception Tests =======
+    // ================================
 
     [Test]
     [Category("Exception")]
@@ -189,7 +214,7 @@ public class SampleIntegrationTests : IAsyncDisposable
         var ex = Assert.ThrowsAsync<InvalidOperationException>(async () =>
         {
             _ = await context.SampleEntities
-                .Where(e => e.Id == -999)
+                .Where(e => e.Id == -999) // Non-existent ID
                 .SingleAsync();
         });
 

@@ -38,8 +38,8 @@ This repository demonstrates how to build robust, isolated, and repeatable integ
 │   └── SampleEntity.cs
 │
 ├── 📁 Tests/
-│   ├── SampleNonResettingDBTests.cs # No DB reset (state grows across tests)
-│   └── SampleIntegrationTests.cs # Resetting DB between tests
+│   ├── SampleNonResettingStatelessTests.cs
+│   └── SampleIntegrationTests.cs
 ```
 
 ---
